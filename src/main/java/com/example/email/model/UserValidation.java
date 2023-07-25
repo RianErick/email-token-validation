@@ -21,4 +21,7 @@ public class UserValidation {
   @Column(name = "data_validacao")
   private LocalDateTime dataTokenValidacao;
 
+  @Column(name = "codigo_validador_token")
+  private Integer codigoValidadorToken ;
+
 }

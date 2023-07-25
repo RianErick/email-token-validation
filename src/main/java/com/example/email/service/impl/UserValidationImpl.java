@@ -3,13 +3,13 @@ package com.example.email.service.impl;
 import com.example.email.model.UserValidation;
 import com.example.email.model.infra.UserRepository;
 import com.example.email.model.infra.ValidationRepository;
+import com.example.email.model.infra.projection.GetCodigoValidadorToken;
 import com.example.email.model.infra.projection.UserProjectionData;
 import com.example.email.service.UserValidationService;
+import com.example.email.util.ModelErro;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.event.TransactionalEventListener;
-
 import java.time.LocalDateTime;
 
 @Service
@@ -29,49 +29,59 @@ public class UserValidationImpl implements UserValidationService {
     public ResponseEntity<?> postValidation(UserValidation user) {
 
         user.setDataTokenValidacao(LocalDateTime.now());
+        user.setCodigoValidadorToken(0);
+
+         checkUserCode(user);
+
+         validationTimerToken(user);
+
+        if (validationRepository.findByEmail(user.getEmail()).isPresent()){
+              user = (UserValidation) validationRepository.findByEmail(user.getEmail()) //Estudar Esse Codigo
+                                              .orElseThrow( () -> new ModelErro("Log Erro"));
+        }
+
+        verificaTokenJaValidado(user);
+
+        user.setCodigoValidadorToken(1);
 
         validationRepository.save(user);
 
-        checkUserCode(user);
-
-      return  validationTimerToken(user);
-
-
+       return ResponseEntity.ok().body("Token Ok");
 
     }
 
     @Transactional
-    public ResponseEntity<?> checkUserCode(UserValidation user) {
+    public void checkUserCode(UserValidation user) {
 
         var query = userRepository.findByCodigo(user.getEmail());
 
         if (!user.getToken().equals(query.getCodigo())) {
 
-            throw new RuntimeException("Sem Acesso");
+            throw new ModelErro("Sem Acesso");
         }
-
-         return ResponseEntity.ok().body("Token Ok");
     }
 
     @Transactional
-    public ResponseEntity <?> validationTimerToken(UserValidation user){
+    public void validationTimerToken(UserValidation user){
 
      LocalDateTime dataAtualToken = LocalDateTime.now();
 
      UserProjectionData dataCriacao = userRepository.findByDataValidadeToken(user.getEmail());
 
-     LocalDateTime data = dataCriacao.getDataCriacaoToken();
+       if (dataAtualToken.isAfter(dataCriacao.getDataCriacaoToken())){
+            throw new ModelErro("Token Expirado");
+       }
+    }
 
-     if (data == null){
-         throw new RuntimeException("Nullo");
-     }
+    @Transactional
+    public Integer verificaTokenJaValidado(UserValidation user){
 
-      if (dataAtualToken.isAfter(dataCriacao.getDataCriacaoToken())){
-            throw new RuntimeException("H2 > H1");
-      }
+        if (user.getCodigoValidadorToken().equals(1)){
+            throw new ModelErro("Esse Codigo ja foi validado com sucesso");
 
-     return ResponseEntity.ok().body("Token Valido");
-
-
+        }
+         return user.getCodigoValidadorToken();
     }
 }
+
+

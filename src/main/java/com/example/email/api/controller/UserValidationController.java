@@ -25,4 +25,6 @@ public class UserValidationController {
        return userValidationService.postValidation(userValidation);
 
     }
+
+
 }

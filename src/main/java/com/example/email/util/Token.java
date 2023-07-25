@@ -1,14 +1,10 @@
-package com.example.email.Util;
-
-import com.example.email.model.User;
+package com.example.email.util;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 
 public class Token {
 
     public static Integer generationCode() {
-
 
         var length = 6;
 

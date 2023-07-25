@@ -1,11 +1,13 @@
 package com.example.email.service.impl;
 
-import com.example.email.Util.Token;
+import com.example.email.util.ModelErro;
+import com.example.email.util.Token;
 import com.example.email.model.User;
 import com.example.email.model.infra.UserRepository;
 import com.example.email.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -29,13 +31,13 @@ public class EmailSendUserImpl implements UserService {
 
         user.setCodigo(Token.generationCode());
 
-        user.setDataCriacaoToken(LocalDateTime.now().plusMinutes(2));
+        user.setDataCriacaoToken(LocalDateTime.now().plusMinutes(15));
 
         checkEmailExist(user.getEmail());
 
         sendEmail(user.getEmail(),
                  "Code Validation ",
-                 " Code  : " + user.getCodigo());
+                   "Code  : " + user.getCodigo());
 
         return userRepository.save(user);
 
@@ -54,17 +56,16 @@ public class EmailSendUserImpl implements UserService {
         javaMailSender.send(simpleMailMessage);
 
     }
-  @Transactional
+    @Transactional
     public String checkEmailExist(String email) {
 
          boolean emailExist = userRepository.findByEmail(email).isPresent();
 
              if(emailExist) {
-                 throw new RuntimeException("Email Exist");
+                 throw new ModelErro("Email Exist" );
              }
 
              return email;
-
     }
 
 
