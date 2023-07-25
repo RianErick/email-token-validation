@@ -3,7 +3,6 @@ package com.example.email.service.impl;
 import com.example.email.model.UserValidation;
 import com.example.email.model.infra.UserRepository;
 import com.example.email.model.infra.ValidationRepository;
-import com.example.email.model.infra.projection.GetCodigoValidadorToken;
 import com.example.email.model.infra.projection.UserProjectionData;
 import com.example.email.service.UserValidationService;
 import com.example.email.util.ModelErro;
@@ -35,11 +34,14 @@ public class UserValidationImpl implements UserValidationService {
 
          validationTimerToken(user);
 
-        if (validationRepository.findByEmail(user.getEmail()).isPresent()){
-              user = (UserValidation) validationRepository.findByEmail(user.getEmail()) //Estudar Esse Codigo
-                                              .orElseThrow( () -> new ModelErro("Log Erro"));
-        }
+        var emailExistente = validationRepository.findByEmail(user.getEmail()).isPresent();
 
+         if (emailExistente) {
+              user = (UserValidation) validationRepository
+                               .findByEmail(user.getEmail())
+                               .get();
+
+        }
         verificaTokenJaValidado(user);
 
         user.setCodigoValidadorToken(1);
