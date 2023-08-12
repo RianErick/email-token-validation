@@ -5,13 +5,14 @@ import com.example.email.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("api/user")
 public class UserController {
-
-
     private UserService userService;
+
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -27,6 +28,13 @@ public class UserController {
 
         return ResponseEntity.status(201)
                     .body("Email Send With Code Auth");
+
+    }
+
+    @PostMapping("/send-all")
+    public ResponseEntity<?> sendEmailAll(){
+
+       return userService.sendEmailAll();
 
     }
 

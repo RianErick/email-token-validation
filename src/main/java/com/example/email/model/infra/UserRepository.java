@@ -15,7 +15,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     UserProjection findByCodigo(@Param(value = "email") String email);
 
     <T> Optional <T> findByEmail (String email);
-
     @Query(value = "select data_criacao as dataCriacaoToken from user where email = :email " , nativeQuery = true)
     UserProjectionData findByDataValidadeToken(@Param(value = "email") String email);
 }

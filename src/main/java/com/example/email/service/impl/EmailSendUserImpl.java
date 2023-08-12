@@ -8,11 +8,14 @@ import com.example.email.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class EmailSendUserImpl implements UserService {
@@ -33,7 +36,7 @@ public class EmailSendUserImpl implements UserService {
 
         user.setDataCriacaoToken(LocalDateTime.now().plusMinutes(15));
 
-        checkEmailExist(user.getEmail());
+      checkEmailExist(user.getEmail());
 
         sendEmail(user.getEmail(),
                  "Code Validation ",
@@ -42,7 +45,6 @@ public class EmailSendUserImpl implements UserService {
         return userRepository.save(user);
 
     }
-
 
     @Transactional
     public void sendEmail(String to, String subject, String body) {
@@ -59,15 +61,32 @@ public class EmailSendUserImpl implements UserService {
     @Transactional
     public String checkEmailExist(String email) {
 
-         boolean emailExist = userRepository.findByEmail(email).isPresent();
+         boolean isEmailExist = userRepository.findByEmail(email).isPresent();
 
-             if(emailExist) {
-                 throw new ModelErro("Email Exist" );
+             if(isEmailExist) {
+                 throw new ModelErro("Email Exist");
              }
 
              return email;
     }
+    @Transactional
+    public ResponseEntity<?> sendEmailAll(){
 
+       List<User> userList = new ArrayList<>();
+
+       userList = userRepository.findAll();
+
+       if (userList.isEmpty()){
+           throw new ModelErro("List is Empty");
+       }
+
+       userList.stream()
+               .forEach(user -> sendEmail(user.getEmail(),
+                       "Hello",
+                       "Email All"));
+
+       return ResponseEntity.ok().build();
+    }
 
 
 }

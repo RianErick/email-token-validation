@@ -17,10 +17,8 @@ public interface ValidationRepository extends JpaRepository<UserValidation,Long>
    ValidationProjetion findByDataRequest(@Param(value = "email") String email);
 
    <T> Optional <T> findByEmail (String email);
-
    @Query(value = "select codigo_validador_token as codigoValidadorToken from validation where email = :email" , nativeQuery = true)
    GetCodigoValidadorToken findByCodigoValidadorToken(@Param(value = "email") String email);
-
 
 
 }

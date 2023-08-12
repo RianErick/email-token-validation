@@ -19,6 +19,7 @@ public class UserValidationImpl implements UserValidationService {
     private final ValidationRepository validationRepository;
 
 
+
     public UserValidationImpl(UserRepository userRepository, ValidationRepository validationRepository) {
         this.userRepository = userRepository;
         this.validationRepository = validationRepository;
@@ -34,14 +35,13 @@ public class UserValidationImpl implements UserValidationService {
 
          validationTimerToken(user);
 
-        var emailExistente = validationRepository.findByEmail(user.getEmail()).isPresent();
+      boolean isEmailExist = validationRepository.findByEmail(user.getEmail()).isPresent();
 
-         if (emailExistente) {
+         if (isEmailExist) {
               user = (UserValidation) validationRepository
-                               .findByEmail(user.getEmail())
-                               .get();
-
+                               .findByEmail(user.getEmail()).get();
         }
+
         verificaTokenJaValidado(user);
 
         user.setCodigoValidadorToken(1);
