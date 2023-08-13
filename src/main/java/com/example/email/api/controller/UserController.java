@@ -32,9 +32,9 @@ public class UserController {
     }
 
     @PostMapping("/send-all")
-    public ResponseEntity<?> sendEmailAll(){
+    public void  sendEmailAll(){
 
-       return userService.sendEmailAll();
+       userService.sendEmailAll();
 
     }
 

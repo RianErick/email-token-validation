@@ -7,5 +7,5 @@ public interface UserService {
 
     User saveEmailUser(User user);
 
-    ResponseEntity<?> sendEmailAll();
+    void sendEmailAll();
 }

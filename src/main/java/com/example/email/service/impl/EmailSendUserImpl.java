@@ -1,5 +1,6 @@
 package com.example.email.service.impl;
 
+import com.example.email.model.infra.projection.GetEmailProjection;
 import com.example.email.util.ModelErro;
 import com.example.email.util.Token;
 import com.example.email.model.User;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,7 +48,7 @@ public class EmailSendUserImpl implements UserService {
 
     }
 
-    @Transactional
+    @Async
     public void sendEmail(String to, String subject, String body) {
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -69,23 +71,22 @@ public class EmailSendUserImpl implements UserService {
 
              return email;
     }
-    @Transactional
-    public ResponseEntity<?> sendEmailAll(){
+   @Async
+    public void sendEmailAll(){
 
-       List<User> userList = new ArrayList<>();
+       List<GetEmailProjection> listEmail;
 
-       userList = userRepository.findAll();
+       listEmail = userRepository.findAllEmail();
 
-       if (userList.isEmpty()){
+       if (listEmail.isEmpty()){
            throw new ModelErro("List is Empty");
        }
 
-       userList.stream()
+       listEmail.stream()
                .forEach(user -> sendEmail(user.getEmail(),
                        "Hello",
-                       "Email All"));
+                        "Email All"));
 
-       return ResponseEntity.ok().build();
     }
 
 
