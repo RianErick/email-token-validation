@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class UserValidationController {
 
-  private UserValidationService userValidationService;
+    private UserValidationService userValidationService;
 
     public UserValidationController(UserValidationService userValidationService) {
         this.userValidationService = userValidationService;
@@ -22,7 +22,7 @@ public class UserValidationController {
     @PostMapping("/validate")
     public ResponseEntity<?> validateCode(@RequestBody UserValidation userValidation) {
 
-       return userValidationService.postValidation(userValidation);
+        return userValidationService.postValidation(userValidation);
 
     }
 

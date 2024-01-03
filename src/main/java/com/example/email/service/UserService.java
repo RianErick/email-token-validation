@@ -7,5 +7,5 @@ public interface UserService {
 
     User saveEmailUser(User user);
 
-    void sendEmailAll();
+    void sendEmailAll() ;
 }

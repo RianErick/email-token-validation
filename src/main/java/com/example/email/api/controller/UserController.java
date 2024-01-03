@@ -2,10 +2,9 @@ package com.example.email.api.controller;
 
 import com.example.email.model.User;
 import com.example.email.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -30,12 +29,11 @@ public class UserController {
                     .body("Email Send With Code Auth");
 
     }
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/send-all")
     public void  sendEmailAll(){
 
        userService.sendEmailAll();
-
     }
 
 
